@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculus in Malaysian Agrotech: Oil Palm Growth Rates</title>
+    <!-- Tailwind CSS for clean, modern styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js for interactive rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #115e59 0%, #064e3b 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Header / Hero Section -->
+    <header class="gradient-bg text-white py-10 px-6 shadow-md">
+        <div class="max-w-6xl mx-auto">
+            <span class="bg-teal-500 text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wide">SFA: Agrotech & Bioscience Application</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold mt-3">Modeling Oil Palm Height & Yield Rates Using Derivatives</h1>
+            <p class="text-teal-100 mt-2 text-sm md:text-base max-w-3xl">
+                An interactive simulation designed for Malaysian undergraduate agrotechnologists to visualize how calculus tracks the absolute growth velocity of <i>Elaeis guineensis</i>.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Column: Bioscience Scenario & Formulas -->
+        <div class="lg:col-span-1 space-y-6">
+            
+            <!-- Problem Context -->
+            <div class="bg-white p-6 rounded-2xl shadow-xs border border-gray-100">
+                <h2 class="text-xl font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                    🌱 The Bioscience Scenario
+                </h2>
+                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                    In Malaysian agrotech management, optimizing canopy breakthrough and timing fertilizer interventions requires knowing not just how tall a palm tree is, but <strong>how fast it is growing at any precise moment</strong>. 
+                </p>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Standard commercial DxP Tenera oil palms follow a sigmoidal biological growth curve. For the first 20 years post-planting, their height profile can be modeled by a cubic polynomial based on empirical growth studies from MPOB.
+                </p>
+                <div class="mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-100 text-xs text-emerald-800">
+                    <strong>Data Reference Focus:</strong> Reference structures adapted from Malaysian Palm Oil Board (MPOB) physiological yield data webpages tracking Tenera height profiles.
+                </div>
+            </div>
+
+            <!-- Mathematical Modeling -->
+            <div class="bg-white p-6 rounded-2xl shadow-xs border border-gray-100">
+                <h2 class="text-xl font-bold text-emerald-900 mb-3">
+                    📐 Mathematical Modeling
+                </h2>
+                <p class="text-xs text-gray-500 mb-4">Let $x$ represent the time in years after field planting ($0 \le x \le 20$), and $f(x)$ represent the average palm height in meters.</p>
+                
+                <!-- Function f(x) -->
+                <div class="mb-4 p-3 bg-gray-50 rounded-lg border-l-4 border-teal-600">
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-teal-700">Height Function, $f(x)$</span>
+                    <div class="text-sm font-mono my-1 font-bold">f(x) = -0.0015x³ + 0.04x² + 0.35x + 0.8</div>
+                    <span class="block text-xs text-gray-500 mt-1">Gives total height of the palm tree at year $x$. Base nursery height starts at 0.8 meters.</span>
+                </div>
+
+                <!-- Derivative f'(x) -->
+                <div class="p-3 bg-gray-50 rounded-lg border-l-4 border-amber-500">
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-amber-700">Instantaneous Growth Rate, $f'(x)$</span>
+                    <div class="text-sm font-mono my-1 font-bold">f'(x) = -0.0045x² + 0.08x + 0.35</div>
+                    <span class="block text-xs text-gray-500 mt-1">Calculated via Power Rule. Yields instantaneous growth velocity in <strong>meters per year</strong>.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Interactive Graph & Live Metrics -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Graph Container -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Interactive Growth Velocity Profile</h2>
+                        <p class="text-xs text-gray-500">Click anywhere inside the chart plot area to evaluate the derivative at that exact year.</p>
+                    </div>
+                    <span class="self-start text-[11px] bg-amber-100 text-amber-800 font-medium px-2 py-1 rounded">Interactive Click Enabled</span>
+                </div>
+                
+                <div class="relative h-[320px] md:h-[400px]">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Dynamics/Click Feedback Panel -->
+            <div id="feedbackPanel" class="bg-amber-50 border border-amber-200 rounded-2xl p-6 transition-all duration-300">
+                <div id="promptMessage" class="text-center py-4 text-amber-800">
+                    <span class="text-2xl block mb-1">👆</span>
+                    <p class="font-medium">Click on any point along the lines above to calculate the derivative $f'(x)$ for that specific growth year.</p>
+                </div>
+                
+                <!-- Dynamic Content (Hidden until click) -->
+                <div id="calcData" class="hidden">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-amber-900 mb-4 pb-2 border-b border-amber-200">
+                        Calculus Evaluation at Year <span id="resYear" class="text-teal-700 font-extrabold text-lg">0</span> Post-Planting
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-white p-3 rounded-lg shadow-2xs border border-amber-100">
+                            <span class="text-xs text-gray-500 block">Current Absolute Height $f(x)$</span>
+                            <span id="resHeight" class="text-xl font-bold text-gray-800">-</span> <span class="text-xs text-gray-500">meters</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-2xs border border-amber-100">
+                            <span class="text-xs text-amber-700 block font-semibold">Instantaneous Derivative Rate $f'(x)$</span>
+                            <span id="resRate" class="text-xl font-bold text-amber-600">-</span> <span class="text-xs text-amber-700 font-semibold">meters / year</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-amber-200">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Layman Bioscience Explanation:</span>
+                        <p id="laymanExplanation" class="text-sm text-gray-700 leading-relaxed italic">
+                            Select a point to unpack biological significance...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 text-center text-xs py-6 mt-12 border-t border-gray-800">
+        <p>© 2026 Malaysia Agrotech Bioscience Tools. Formulated for academic modeling of biological systems.</p>
+    </footer>
+
+    <!-- Scripting Logic -->
+    <script>
+        // 1. Math Formulations
+        function getHeight(x) {
+            return (-0.0015 * Math.pow(x, 3)) + (0.04 * Math.pow(x, 2)) + (0.35 * x) + 0.8;
+        }
+
+        function getGrowthRate(x) {
+            return (-0.0045 * Math.pow(x, 2)) + (0.08 * x) + 0.35;
+        }
+
+        // Generate data arrays for the 0 - 20 years range
+        const labels = [];
+        const heightData = [];
+        const rateData = [];
+
+        for (let x = 0; x <= 20; x += 0.5) {
+            labels.push(x);
+            heightData.push(getHeight(x).toFixed(2));
+            rateData.push(getGrowthRate(x).toFixed(3));
+        }
+
+        // 2. Chart.js Setup
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        const growthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Height f(x) (meters)',
+                        data: heightData,
+                        borderColor: '#0f766e',
+                        backgroundColor: 'rgba(15, 118, 110, 0.05)',
+                        borderWidth: 3,
+                        yAxisID: 'yHeight',
+                        tension: 0.2,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: "Growth Velocity f'(x) (m/year)",
+                        data: rateData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        yAxisID: 'yRate',
+                        tension: 0.2,
+                        pointHoverRadius: 7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { boxWidth: 15, font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Years Post Field-Planting (x)',
+                            color: '#374151',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    yHeight: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Total Palm Height (meters)',
+                            color: '#0f766e',
+                            font: { weight: 'bold' }
+                        },
+                        min: 0,
+                        max: 14
+                    },
+                    yRate: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Growth Rate (meters/year)',
+                            color: '#b45309',
+                            font: { weight: 'bold' }
+                        },
+                        min: 0,
+                        max: 1.0,
+                        grid: {
+                            drawOnChartArea: false // prevent grid lines overlap
+                        }
+                    }
+                },
+                // Handle user click on graph elements
+                onClick: (e) => {
+                    const points = growthChart.getElementsAtEventForMode(e, 'index', { intersect: false }, true);
+                    if (points.length) {
+                        const index = points[0].index;
+                        const selectedYear = labels[index];
+                        updateAnalysis(selectedYear);
+                    }
+                }
+            }
+        });
+
+        // 3. Bioscience Dynamic Feedback Logic
+        function updateAnalysis(year) {
+            const height = getHeight(year);
+            const rate = getGrowthRate(year);
+
+            // Toggle Panel Visibility
+            document.getElementById('promptMessage').classList.add('hidden');
+            document.getElementById('calcData').classList.remove('hidden');
+            
+            // Background Highlight animation effect
+            const panel = document.getElementById('feedbackPanel');
+            panel.classList.remove('bg-amber-50');
+            panel.classList.add('bg-teal-50');
+            setTimeout(() => {
+                panel.classList.remove('bg-teal-50');
+                panel.classList.add('bg-amber-50');
+            }, 200);
+
+            // Push values into HTML elements
+            document.getElementById('resYear').innerText = year;
+            document.getElementById('resHeight').innerText = height.toFixed(2);
+            document.getElementById('resRate').innerText = rate.toFixed(3);
+
+            // Generate localized contextual layman bio-explanation
+            let explanation = "";
+            if (year <= 3) {
+                explanation = `At ${year} years, the immature palm is establishing its root structure. The derivative f'(x) shows it is accelerating upward at ${rate.toFixed(2)} meters/year. Frond production is high; weed management and nitrogen application are critical right now to sustain this accelerating momentum.`;
+            } else if (year > 3 && year <= 9) {
+                explanation = `Peak biological structural efficiency! Around year ${year}, the derivative shows the palm is expanding at its fastest absolute rate (${rate.toFixed(2)} m/year). The tree has entered prime commercial harvesting. Potassium demands are at maximum because biomass expansion is working at full throttle.`;
+            } else if (year > 9 && year <= 15) {
+                explanation = `The tree is maturing into its middle age at year ${year}. Notice that while the height curve is still going up, the derivative curve f'(x) is tapering down to ${rate.toFixed(2)} meters/year. The palm is shifting its major bio-energetic resources away from rapid trunk extension and allocating it towards heavy fresh fruit bunch (FFB) synthesis.`;
+            } else {
+                explanation = `At ${year} years, the palm is tall (${height.toFixed(1)}m) but its growth velocity has slowed right down to just ${rate.toFixed(2)} meters/year. In Malaysian plantations, when the derivative drops this low, harvesting tall canopies manually becomes economically inefficient, signalling a transition plan for replanting within the next few years.`;
+            }
+
+            document.getElementById('laymanExplanation').innerText = explanation;
+        }
+    </script>
+</body>
+</html>
